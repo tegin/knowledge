@@ -11,7 +11,7 @@
         <field name="arch" type="xml">
             <xpath expr="//h1" position="before">
                 <h2>
-                <field name="reference" placeholder="internal_reference"/>
+                    <field name="reference" placeholder="internal_reference"/>
                 </h2>
             </xpath>
             <field name="content"  position="attributes">
