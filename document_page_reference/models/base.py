@@ -5,10 +5,10 @@ from werkzeug.urls import url_encode
 class Base(models.AbstractModel):
     _inherit = 'base'
 
-    def get_direct_access_url(self):
+    def get_direct_access_url(self, model=False):
         self.ensure_one()
         params = {
-            'model': self._name,
-            'res_id': self.id,
+            'model': model or self._name,
+            'id': self.id,
         }
-        return '/mail/view?' + url_encode(params)
+        return '/web#' + url_encode(params)
