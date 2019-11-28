@@ -77,22 +77,34 @@ class DocumentPage(models.Model):
         return False
 
     def get_reference(self, code):
-        element = self._get_document(code)
+        split_code = code.split("·")
+        model = False
+        if len(split_code) == 1:
+            element = self._get_document(code)
+        else:
+            model, ref = split_code
+            model = model.replace("_", ".")
+            element = self.env[model].search([('name', '=', ref)])
         if not element:
             return code
         if self.env.context.get('raw_reference', False):
             return html_escape(element.display_name)
         return '<a href="%s">%s</a>' % (
-            element.get_direct_access_url(), html_escape(element.display_name))
+            element.get_direct_access_url(model),
+            html_escape(element.display_name))
 
     def _get_template_variables(self):
         return {'ref': self.get_reference}
 
     def get_content(self):
         content = self.content
-        mako_env = mako_template_env
-        template = mako_env.from_string(tools.ustr(content))
-        return template.render(self._get_template_variables())
+        try:
+            mako_env = mako_template_env
+            template = mako_env.from_string(tools.ustr(content))
+            return template.render(self._get_template_variables())
+        except Exception as e:
+            print(e)
+            pass
 
     def get_raw_content(self):
         return self.with_context(raw_reference=True).get_content()
